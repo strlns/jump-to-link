@@ -1,0 +1,40 @@
+{
+    "manifest_version": 2,
+    "name": "Jump to link",
+    "version": "0.0.1",
+    "description": "Search text and URL of the links on a page, optionally restricted to current viewport.",
+    "background": {
+        "scripts": [
+            "lib/browser-polyfill.min.js",
+            "background.js"
+        ]
+    },
+    "commands": {
+        "toggle_jumptolink": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+Space"
+            },
+            "description": "Open link-search bar"
+        }
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ],
+            "css": [
+                "style.css"
+            ],
+            "js": [
+                "lib/browser-polyfill.min.js",
+                "content.js"
+            ]
+        }
+    ],
+    "icons": {
+        "48": "icon.svg",
+        "96": "icon.svg"
+    },
+    "permissions": ["tabs", "activeTab", "storage"]
+}

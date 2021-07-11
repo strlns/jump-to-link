@@ -1,0 +1,56 @@
+#jtl-search-1625492747 {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+    padding: .25rem .5rem;
+    background-color: #F9F9FB;
+    border-color: #1E1E1E;
+    border-width: 1px;
+    border-style: solid none none;
+    color: #1E1E1E;
+    font-family: sans-serif;
+    pointer-events: none;
+    transform: translateY(100%);
+    visibility: hidden;
+    font-size: .75rem;
+    transition: transform .25s ease;
+}
+
+#jtl-search-1625492747.visible {
+    transform: translateY(0);
+    visibility: visible;
+    pointer-events: all;
+}
+#jtl-search-1625492747 .search {
+    height: 1.5rem;
+    font-family: inherit;
+    color: #1E1E1E;
+    font-size: inherit;
+    padding: .25rem;
+}
+
+#jtl-search-1625492747 .current {
+    text-align: right;
+    flex-grow: 9;
+}
+#jtl-search-1625492747 .count {
+    text-align: right;
+    font-size: 1rem;
+    font-weight: bold;
+    flex-grow: 1;
+    flex-shrink: 0;
+}
+#jtl-search-1625492747 fieldset {
+    padding: 0;
+    border: none;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+#jtl-search-1625492747 fieldset label {
+    margin-bottom: 0;
+}
