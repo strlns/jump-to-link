@@ -611,7 +611,10 @@
         const implicitMarginTop = getImplicitScrollMarginTop(body);
         const spaceToViewBottom = window.innerHeight - rect.bottom;
         if (rect.top < implicitMarginTop || spaceToViewBottom < Math.max(rect.height, minBottomSpace)) {
-            let targetY = rect.top + window.scrollY - implicitMarginTop + minBottomSpace * 2;
+            let targetY = rect.top + window.scrollY - implicitMarginTop;
+            if (rect.top - implicitMarginTop > window.innerHeight - minBottomSpace) {
+                targetY += minBottomSpace;
+            }
             window.scrollTo(window.scrollX, targetY);
         }
     }
