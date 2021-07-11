@@ -1,20 +1,37 @@
 //if a bundler is introduced, move to shared module.
 const MSG_TOGGLE = 0;
+const MSG_NAVIGATION = 1;
+
+/**
+@todo
+Something in here triggers a recursion error on the background page in Chrome and Firefox,
+whenever the command is triggered,
+but only on some pages (for example YouTube). 
+The actual recursion in the content script (z index calculation and detection of fixed elements)
+is not responsible. The background script keeps working.
+*/
 
 browser.commands.onCommand.addListener(async function(cmdName) {
     if (cmdName === 'toggle_jumptolink') {
-        try {
-            const tab = await getActiveTab();
-                browser.tabs.sendMessage(
+        const tab = await getActiveTab();
+        if (tab) {
+            browser.tabs.sendMessage(
                 tab.id,
                 MSG_TOGGLE
             );
         }
-        catch {
-
-        }  
     }
 })
+
+browser.webNavigation.onBeforeNavigate.addListener(async function() {
+    const tab = await getActiveTab();
+    if (tab) {
+        browser.tabs.sendMessage(
+            tab.id,
+            MSG_NAVIGATION
+        );
+    }
+});
 
 async function getActiveTab() {
     return browser.tabs.query({
@@ -25,10 +42,7 @@ async function getActiveTab() {
             return tabs[0];
         }
         else {
-            throw new Error('No active tab.');
+            return null;
         }
     })
 }
-// setInterval(() => {
-    
-// }, 500)

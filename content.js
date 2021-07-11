@@ -5,8 +5,7 @@
     const barId = 'jtl-search-1625492747';
 
     const MSG_TOGGLE = 0;
-
-    let bar = document.createElement('ASIDE');
+    const MSG_NAVIGATION = 1;
 
     const body = document.body ?? document.documentElement;
 
@@ -39,6 +38,7 @@
     class SearchBar {
         constructor(element) {
             this.element = element;
+            element.innerText = '';
             this.element.id = barId;
             this.highlightContainer = null;
             this.matches = [];
@@ -49,10 +49,10 @@
             this.rect = element.getBoundingClientRect();
             browser.storage.local.get('isRestrictedToViewport').then(
                 ({ isRestrictedToViewport }) => {
-                    this.isRestrictedToViewport = isRestrictedToViewport ?? true;
+                    this.isRestrictedToViewport = isRestrictedToViewport ?? false;
                 }
             ).catch(() => {
-                this.isRestrictedToViewport = true;
+                this.isRestrictedToViewport = false;
             }).finally(() => this.addCheckboxForViewportRestriction());
             this._visible = false;
             this._searchText = '';
@@ -62,36 +62,9 @@
             this.addCurrentInfo();
             this.addCounter();
             this.addCloseIcon();
-            this.addKeyboardListeners();
+            this.addKeydownListener();
             this.updateAllLinks();
-            const resizeHandler = () => {
-                if (this.visible) {
-                    this.updateAllLinks();
-                    this.updateOwnHeight();
-                    this.updateMatches();
-                }
-            };
-            const scrollHandler = () => {
-                if (this.visible) {
-                    if (this.isRestrictedToViewport) {
-                        this.updateMatches(false);
-                    }
-                }
-            };
-            window.addEventListener(
-                'resize',
-                debounce(resizeHandler, 50, true)
-            );
-            window.addEventListener(
-                'scroll',
-                debounce(scrollHandler, 75, true), { passive: true }
-            );
-            window.addEventListener('load', () => {
-                this.updateAllLinks();
-                if (this.visible) {
-                    this.updateMatches();
-                }
-            });
+            this.addViewportListeners();
 
             /**
              * Update this.links in a MutationObserver observing whole document / document.body.
@@ -115,6 +88,41 @@
                     }
                 }, 100, true)
             )
+        }
+        
+        addViewportListeners() {
+            this.resizeHandler = debounce(
+                () => {
+                if (this.visible) {
+                    this.updateAllLinks();
+                    this.updateOwnHeight();
+                    this.updateMatches();
+                }
+            }, 50, true);
+            this.scrollHandler = debounce(
+                () => {
+                if (this.visible) {
+                    if (this.isRestrictedToViewport) {
+                        this.updateMatches(false);
+                    }
+                }
+            }, 75, true);
+
+            window.addEventListener(
+                'resize',
+                this.resizeHandler
+            );
+            window.addEventListener(
+                'scroll',
+                this.scrollHandler
+            );
+            const loadListener = () => {
+                this.updateAllLinks();
+                if (this.visible) {
+                    this.updateMatches();
+                }
+            };
+            window.addEventListener('load', loadListener);
         }
 
         addInput() {
@@ -193,7 +201,6 @@
         set visible(visibility) {
             this._visible = visibility ?? !this.visible;
             this.element.classList.toggle('visible', this.visible);
-            this.element.style.zIndex = this.maxBodyChildZ + 2;
             if (this.visible) {
                 window.top.focus();
                 this.input.focus();
@@ -392,8 +399,8 @@
             this.updateCurrentInfo();
         }
 
-        addKeyboardListeners() {
-            this.element.addEventListener('keydown', event => {
+        addKeydownListener() {
+            this.keydownListener = event => {
                 switch (event.key) {
                     case 'Escape':
                         this.visible = false;
@@ -415,7 +422,8 @@
                             }
                         }
                 }
-            });
+            };
+            this.element.addEventListener('keydown', this.keydownListener);
         }
 
         updateZIndexes() {
@@ -453,7 +461,7 @@
                     this.resizeObserver.observe(node);
                 }
             };
-            body.children.forEach(immediateBodyChild => {
+            Array.from(body.children).forEach(immediateBodyChild => {
                 observeChildren(immediateBodyChild)
             })
         }
@@ -482,14 +490,32 @@
             this.matches = filteredMatches;
             this.coveredMatches = coveredMatches;
         }
+        destroy() {
+            this.disableObservers();
+            window.removeEventListener('resize', this.resizeHandler);
+            window.removeEventListener('scroll', this.scrollHandler);
+            this.element.removeEventListener('keydown', this.keydownListener);
+            body.removeChild(this.element);
+        }
+    }
+    let searchBarElement, searchBar;
+    const init = () => {
+        if (searchBar) {
+            searchBar.destroy();
+        }
+        searchBarElement = document.createElement('ASIDE');
+        searchBar = new SearchBar(searchBarElement);
     }
 
-    const searchBar = new SearchBar(bar);
-
+    init();
+    
     browser.runtime.onMessage.addListener(msg => {
         switch (msg) {
             case MSG_TOGGLE:
                 searchBar.visible = !searchBar.visible;
+                break;
+            case MSG_NAVIGATION:
+                init();
                 break;
         }
     })
@@ -603,8 +629,7 @@
     }
 
     /**
-     * @param {HTMLElement} element 
-     * @todo search bar covers results at the bottom of the viewport at page end.
+     * @param {HTMLElement} element
      */
     function scrollIntoView(element, minBottomSpace = 0) {
         const rect = element.getBoundingClientRect();

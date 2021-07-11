@@ -20,7 +20,8 @@ If the corresponding option is set, only results inside the current viewport are
 ## Problems:
 * iframes cannot be searched
 * Only links with a `href` attribute and `<button>` tags are searched.
-* Some sites don't work with the "restrict to viewport" setting, e.g. Google News
+* Some sites don't work with the "restrict to viewport" setting - 
+    examples are Google News, YouTube, probably lots of SPAs, haven't investigated.
 * If search is not restricted to the current viewport, invisible elements that are covered by other elements may be included in the results.
 * Performance is not optimized. No significant load should occur when search bar is not open.
 * Bugs may occur on pages with heavy layout shifts, or many sticky, fixed or absolutely positioned elements
