@@ -495,6 +495,9 @@
             window.removeEventListener('resize', this.resizeHandler);
             window.removeEventListener('scroll', this.scrollHandler);
             this.element.removeEventListener('keydown', this.keydownListener);
+            if (this.highlightContainer !== null) {
+                this.removeHighlightContainer();
+            }
             body.removeChild(this.element);
         }
     }
