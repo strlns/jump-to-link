@@ -8,7 +8,7 @@ Something in here triggers a recursion error on the background page in Chrome an
 whenever the command is triggered,
 but only on some pages (for example YouTube). 
 The actual recursion in the content script (z index calculation and detection of fixed elements)
-is not responsible. The background script keeps working.
+is not responsible. The background script keeps working, but this problem seems to cause a slowdown.
 */
 
 browser.commands.onCommand.addListener(async function(cmdName) {
