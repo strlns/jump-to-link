@@ -37,5 +37,5 @@
         "48": "icon.svg",
         "96": "icon.svg"
     },
-    "permissions": ["tabs", "activeTab", "storage", "webNavigation"]
+    "permissions": ["activeTab", "storage", "webNavigation"]
 }

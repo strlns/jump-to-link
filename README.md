@@ -24,6 +24,8 @@ If the corresponding option is set, only results inside the current viewport are
     examples are Google News, YouTube, probably lots of SPAs, haven't investigated.
 * If search is not restricted to the current viewport, invisible elements that are covered by other elements may be included in the results.
 * Performance is not optimized. No significant load should occur when search bar is not open.
+* Scrolling to links can fail in some SPAs with lazy loading, e.g. YouTube
+* "Restrict to viewport" causes problems in some SPAs such as YouTube
 * Bugs may occur on pages with heavy layout shifts, or many sticky, fixed or absolutely positioned elements
 * Bugs may occur when content is updated, resized or removed via JS
 * Bugs may occur when toggling option "restrict to viewport", and when scrolling while said option is enabled

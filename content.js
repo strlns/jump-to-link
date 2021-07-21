@@ -609,15 +609,22 @@
         return n < 0 ? Math.abs((n + n % m) % m) : n % m;
     }
 
-    //primitive search for fixed header height. currently only for immediate children of body.
+    /** 
+     * Primitive search for fixed header height. Purpose: fixed headers often cover search results.
+     * Shouldn't be needed on sites using scroll-margin-top CSS.
+     * The non-fixed state of position: sticky is not treated exceptionally, because viewport height is
+     * mostly large enough to ignore these cases.
+     * Same goes for search results that might occur within fixed headers.
+     * @todo this method has a confusing name.
+      */
     function getImplicitScrollMarginTop(parent, maxIterations = 4, iteration = 0) {
         let result = 0;
         for (element of Array.from(parent.children)) {
             const style = getComputedStyle(element);
             const rect = element.getBoundingClientRect();
             if (
-                (style.position === 'fixed' || style.position === 'absolute' || style.position === 'sticky')
-                && rect.height > result && rect.top < 200
+                (style.position === 'fixed' || style.position === 'sticky')
+                && rect.width > window.innerWidth / 2 && rect.height > result && rect.top < 200
             ) {
                 result = rect.height;
             }
