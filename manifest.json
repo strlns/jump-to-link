@@ -6,7 +6,7 @@
     "description": "Search text and URL of the links on a page, optionally restricted to current viewport.",
     "background": {
         "scripts": [
-            "lib/browser-polyfill.min.js",
+            "browser-polyfill.min.js",
             "background.js"
         ]
     },
@@ -28,7 +28,7 @@
                 "style.css"
             ],
             "js": [
-                "lib/browser-polyfill.min.js",
+                "browser-polyfill.min.js",
                 "content.js"
             ]
         }
